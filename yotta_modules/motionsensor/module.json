@@ -1,0 +1,23 @@
+{
+  "name": "motionsensor",
+  "version": "0.0.1",
+  "description": "Interface class for sensors that return a type of motion",
+  "keywords": [
+    "motionsensor",
+    "motion",
+    "acceleration",
+    "accel",
+    "gyrometer",
+    "gyro",
+    "magnetometer",
+    "magento"
+  ],
+  "author": "",
+  "licenses": [
+    {
+      "url": "https://spdx.org/licenses/Apache-2.0",
+      "type": "Apache-2.0"
+    }
+  ],
+  "dependencies": {}
+}

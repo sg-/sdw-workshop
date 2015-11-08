@@ -33,7 +33,7 @@ const String &SERIAL_NUMBER = "12345";
 const uint8_t STATIC_VALUE[] = "Static value";
 
 extern Serial output;
-
+extern FXOS8700QAccelerometer acc;
 
 class MbedClient: public M2MInterfaceObserver {
 public:
@@ -45,7 +45,7 @@ public:
         _unregistered = false;
         _register_security = NULL;
         _value = 0;
-        _object = NULL;
+        _swd_object = NULL;
     }
 
     ~MbedClient() {
@@ -116,71 +116,42 @@ public:
         return device;
     }
 
-    M2MObject* create_generic_object() {
-        _object = M2MInterfaceFactory::create_object("Test");
-        if(_object) {
-            M2MObjectInstance* inst = _object->create_object_instance();
+    M2MObject* create_sdw_object() {
+        _swd_object = M2MInterfaceFactory::create_object("777");
+        
+        if(_swd_object) {
+            M2MObjectInstance* inst = _swd_object->create_object_instance();
             if(inst) {
-                    M2MResource* res = inst->create_dynamic_resource("D",
-                                                                     "ResourceTest",
-                                                                     M2MResourceInstance::INTEGER,
-                                                                     true);
-                    char buffer[20];
-                    int size = sprintf(buffer,"%d",_value);
-                    res->set_operation(M2MBase::GET_PUT_ALLOWED);
-                    res->set_value((const uint8_t*)buffer,
-                                   (const uint32_t)size);
-                    _value++;
-
-                    inst->create_static_resource("S",
-                                                 "ResourceTest",
-                                                 M2MResourceInstance::STRING,
-                                                 STATIC_VALUE,
-                                                 sizeof(STATIC_VALUE)-1);
+                M2MResource* res = inst->create_dynamic_resource("7777",
+                                                                 "FXOS8700Q",
+                                                                 M2MResourceInstance::STRING,
+                                                                 true);
+                char buffer[64] = "";
+                // fill the value of the acceleromter
+                sprintf(buffer,"{\"accelX\":%1.1f, \"accelY\":%1.1f, \"accelZ\":%1.1f}", 0.0f, 0.0f ,0.0f);
+                // set the value of the accelerometer data
+                res->set_operation(M2MBase::GET_PUT_ALLOWED);
+                res->set_value((const uint8_t*)buffer,
+                               (const uint32_t)strlen(buffer));
             }
         }
-        return _object;
-    }
-    
-    M2MObject* create_sdw_object() {
-        _object = M2MInterfaceFactory::create_object("Test");
-        // if(_object) {
-        //     M2MObjectInstance* inst = _object->create_object_instance();
-        //     if(inst) {
-        //             M2MResource* res = inst->create_dynamic_resource("D",
-        //                                                              "ResourceTest",
-        //                                                              M2MResourceInstance::INTEGER,
-        //                                                              true);
-        //             char buffer[20];
-        //             int size = sprintf(buffer,"%d",_value);
-        //             res->set_operation(M2MBase::GET_PUT_ALLOWED);
-        //             res->set_value((const uint8_t*)buffer,
-        //                           (const uint32_t)size);
-        //             _value++;
-
-        //             inst->create_static_resource("S",
-        //                                          "ResourceTest",
-        //                                          M2MResourceInstance::STRING,
-        //                                          STATIC_VALUE,
-        //                                          sizeof(STATIC_VALUE)-1);
-        //     }
-        // }
-        return _object;
+        return _swd_object;
     }
 
-    void update_resource() {
-        if(_object) {
-            M2MObjectInstance* inst = _object->object_instance();
+    void update_sdw_resource() {
+        if(_swd_object) {
+            M2MObjectInstance* inst = _swd_object->object_instance();
             if(inst) {
-                    M2MResource* res = inst->resource("D");
-
-                    char buffer[20];
-                    int size = sprintf(buffer,"%d",_value);
-                    res->set_value((const uint8_t*)buffer,
-                                   (const uint32_t)size);
-                    output.printf("Cnt == %d\n", _value);
-                    _value++;
-                }
+                M2MResource* res = inst->resource("7777");
+                char buffer[64] = "";
+                motion_data_units_t data;
+                acc.getAxis(data);
+                // fill the value of the acceleromter
+                sprintf(buffer,"{\"accelX\":%1.1f, \"accelY\":%1.1f, \"accelZ\":%1.1f}", data.x, data.y ,data.z);                
+                // set the value of the accelerometer data
+                res->set_value((const uint8_t*)buffer,
+                               (const uint32_t)strlen(buffer));
+            }
         }
     }
 
@@ -298,7 +269,7 @@ private:
 
     M2MInterface    	*_interface;
     M2MSecurity         *_register_security;
-    M2MObject           *_object;
+    M2MObject           *_swd_object;
     volatile bool       _bootstrapped;
     volatile bool       _error;
     volatile bool       _registered;
