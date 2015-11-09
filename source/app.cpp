@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "sockets/UDPSocket.h"
-#include "EthernetInterface.h"
-#include "mbed-drivers/test_env.h"
-#include "mbed-client/m2minterfacefactory.h"
-#include "mbed-client/m2mdevice.h"
-#include "mbed-client/m2minterfaceobserver.h"
-#include "mbed-client/m2minterface.h"
-#include "mbed-client/m2mobjectinstance.h"
-#include "mbed-client/m2mresource.h"
+
 #include "minar/minar.h"
+#include "EthernetInterface.h"
 #include "lwipv4_init.h"
 
 #include "FXOS8700Q/FXOS8700Q.h"
-#include "security.h"
 #include "mbed-client-impl.h"
 
 using namespace mbed::util;
@@ -34,15 +26,14 @@ using namespace mbed::util;
 Serial output(USBTX, USBRX);
 
 EthernetInterface eth;
-// Instantiate the class which implements
-// LWM2M Client API
+// Instantiate the class which implements LWM2M Client API
 MbedClient mbed_client;
 
 // Set up Hardware interrupt button.
-InterruptIn unreg_button(SW3);
+//InterruptIn unreg_button(SW3);
 
-I2C i2c(PTE25, PTE24);
 // Configured for the FRDM-K64F with onboard sensors
+I2C i2c(PTE25, PTE24);
 FXOS8700QAccelerometer acc(i2c, FXOS8700CQ_SLAVE_ADDR1);
 
 void app_start(int /*argc*/, char* /*argv*/[]) {
@@ -50,14 +41,8 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
     //Sets the console baud-rate
     output.baud(115200);
 
-    // start the accelerometer and magnetometer
+    // start the accelerometer
     acc.enable();
-    motion_data_units_t acc_data;
-    while (1) {
-        acc.getAxis(acc_data);
-        output.printf("ACC: X=%1.4ff Y=%1.4ff Z=%1.4f\r\n", acc_data.x, acc_data.y, acc_data.z);
-        wait(1.0f);
-    }
 
     // This sets up the network interface configuration which will be used
     // by LWM2M Client API to communicate with mbed Device server.
@@ -72,11 +57,10 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
     }
 
     lwipv4_socket_init();
-    output.printf("IP address %s\r\n", eth.getIPAddress());
 
     // On press of SW3 button on K64F board, example application
     // will call unregister API towards mbed Device Server
-    unreg_button.fall(&mbed_client,&MbedClient::test_unregister);
+    // unreg_button.fall(&mbed_client,&MbedClient::test_unregister);
 
     // Create LWM2M Client API interface to manage register and unregister
     mbed_client.create_interface();
@@ -103,7 +87,7 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
     // Issue register command.
     FunctionPointer2<void, M2MSecurity*, M2MObjectList> fp(&mbed_client, &MbedClient::test_register);
     minar::Scheduler::postCallback(fp.bind(register_object, object_list));
-    minar::Scheduler::postCallback(&mbed_client, &MbedClient::update_sdw_resource).period(minar::milliseconds(5000));
+    minar::Scheduler::postCallback(&mbed_client, &MbedClient::update_sdw_resource).period(minar::milliseconds(2000));
     minar::Scheduler::postCallback(&mbed_client, &MbedClient::test_update_register).period(minar::milliseconds(25000));
 }
        

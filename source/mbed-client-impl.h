@@ -16,6 +16,17 @@
 #ifndef __MBED_CLIENT_IMPL_H__
 #define __MBED_CLIENT_IMPL_H__
 
+#include "sockets/UDPSocket.h"
+#include "mbed-client/m2minterfacefactory.h"
+#include "mbed-client/m2mdevice.h"
+#include "mbed-client/m2minterfaceobserver.h"
+#include "mbed-client/m2minterface.h"
+#include "mbed-client/m2mobjectinstance.h"
+#include "mbed-client/m2mresource.h"
+#include "mbed-drivers/test_env.h"
+
+#include "security.h"
+
 //Select binding mode: UDP or TCP
 M2MInterface::BindingMode SOCKET_MODE = M2MInterface::UDP;
 
@@ -38,7 +49,7 @@ extern FXOS8700QAccelerometer acc;
 
 class MbedClient: public M2MInterfaceObserver {
 public:
-    MbedClient(){
+    MbedClient() {
         _interface = NULL;
         _bootstrapped = false;
         _error = false;
@@ -50,10 +61,10 @@ public:
     }
 
     ~MbedClient() {
-        if(_interface) {
+        if (_interface) {
             delete _interface;
         }
-        if(_register_security){
+        if (_register_security) {
             delete _register_security;
         }
     }
@@ -97,7 +108,7 @@ public:
         // Creates register server object with mbed device server address and other parameters
         // required for client to connect to mbed device server.
         M2MSecurity *security = M2MInterfaceFactory::create_security(M2MSecurity::M2MServer);
-        if(security) {
+        if (security) {
             security->set_resource_value(M2MSecurity::M2MServerUri, MBED_SERVER_ADDRESS);
             security->set_resource_value(M2MSecurity::SecurityMode, M2MSecurity::Certificate);
             security->set_resource_value(M2MSecurity::ServerPublicKey,SERVER_CERT,sizeof(SERVER_CERT));
@@ -111,7 +122,7 @@ public:
         // Creates device object which contains mandatory resources linked with
         // device endpoint.
         M2MDevice *device = M2MInterfaceFactory::create_device();
-        if(device) {
+        if (device) {
             device->create_resource(M2MDevice::Manufacturer,MANUFACTURER);
             device->create_resource(M2MDevice::DeviceType,TYPE);
             device->create_resource(M2MDevice::ModelNumber,MODEL_NUMBER);
@@ -123,9 +134,9 @@ public:
     M2MObject* create_sdw_object() {
         _sdw_object = M2MInterfaceFactory::create_object("777");
         
-        if(_sdw_object) {
+        if (_sdw_object) {
             M2MObjectInstance* inst = _sdw_object->create_object_instance();
-            if(inst) {
+            if (inst) {
                 M2MResource* res = inst->create_dynamic_resource("7777",
                                                                  "FXOS8700Q",
                                                                  M2MResourceInstance::STRING,
@@ -148,9 +159,9 @@ public:
     }
 
     void update_sdw_resource() {
-        if(_sdw_object) {
+        if (_sdw_object) {
             M2MObjectInstance* inst = _sdw_object->object_instance();
-            if(inst) {
+            if (inst) {
                 M2MResource* res = inst->resource("7777");
                 if (res) {
                     char buffer[64] = "";
@@ -169,15 +180,15 @@ public:
         }
     }
 
-    void test_register(M2MSecurity *register_object, M2MObjectList object_list){
-        if(_interface) {
+    void test_register(M2MSecurity *register_object, M2MObjectList object_list) {
+        if (_interface) {
             // Register function
             _interface->register_object(register_object, object_list);
         }
     }
 
     void test_unregister() {
-        if(_interface) {
+        if (_interface) {
             // Unregister function
             _interface->unregister_object(NULL);
         }
@@ -188,7 +199,7 @@ public:
     // which will be used for registering the resources to
     // mbed Device server.
     void bootstrap_done(M2MSecurity *server_object) {
-        if(server_object) {
+        if (server_object) {
             _bootstrapped = true;
             _error = false;
             trace_printer("\nBootstrapped\n");
@@ -223,7 +234,7 @@ public:
     // the callback.
     void error(M2MInterface::Error error) {
         _error = true;
-        switch(error){
+        switch(error) {
             case M2MInterface::AlreadyExists:
                 trace_printer("[ERROR:] M2MInterface::AlreadyExists\n");
                 break;
@@ -263,8 +274,7 @@ public:
     // during PUT operation. Object and its type is passed in
     // the callback.
     void value_updated(M2MBase *base, M2MBase::BaseType type) {
-        output.printf("\nValue updated of Object name %s and Type %d\n",
-               base->name().c_str(), type);
+        output.printf("\nUpdate Object name %s and Type %d\n", base->name().c_str(), type);
     }
 
     void test_update_register() {
