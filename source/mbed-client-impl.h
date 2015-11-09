@@ -162,7 +162,7 @@ public:
                                    (const uint32_t)strlen(buffer));
                     trace_printer("%s\n", buffer);
                 } else {
-                    trace_printer("%s:%d - Failed to create M2MResource\n", __FILE__, __LINE__);
+                    trace_printer("%s:%d - Failed to get M2MResource\n", __FILE__, __LINE__);
                 }
             }
         }
@@ -186,7 +186,7 @@ public:
     // is successful, it returns the mbed Device Server object
     // which will be used for registering the resources to
     // mbed Device server.
-    void bootstrap_done(M2MSecurity *server_object){
+    void bootstrap_done(M2MSecurity *server_object) {
         if(server_object) {
             _bootstrapped = true;
             _error = false;
@@ -197,7 +197,7 @@ public:
     //Callback from mbed client stack when the registration
     // is successful, it returns the mbed Device Server object
     // to which the resources are registered and registered objects.
-    void object_registered(M2MSecurity */*security_object*/, const M2MServer &/*server_object*/){
+    void object_registered(M2MSecurity */*security_object*/, const M2MServer &/*server_object*/) {
         _registered = true;
         _unregistered = false;
         trace_printer("\nRegistered\n");
@@ -206,7 +206,7 @@ public:
     //Callback from mbed client stack when the unregistration
     // is successful, it returns the mbed Device Server object
     // to which the resources were unregistered.
-    void object_unregistered(M2MSecurity */*server_object*/){
+    void object_unregistered(M2MSecurity */*server_object*/) {
         _unregistered = true;
         _registered = false;
         notify_completion(_unregistered);
@@ -214,13 +214,13 @@ public:
         trace_printer("\nUnregistered\n");
     }
 
-    void registration_updated(M2MSecurity */*security_object*/, const M2MServer & /*server_object*/){
+    void registration_updated(M2MSecurity */*security_object*/, const M2MServer & /*server_object*/) {
     }
 
     //Callback from mbed client stack if any error is encountered
     // during any of the LWM2M operations. Error type is passed in
     // the callback.
-    void error(M2MInterface::Error error){
+    void error(M2MInterface::Error error) {
         _error = true;
         switch(error){
             case M2MInterface::AlreadyExists:

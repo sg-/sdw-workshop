@@ -55,7 +55,7 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
     motion_data_units_t acc_data;
     while (1) {
         acc.getAxis(acc_data);
-        printf("ACC: X=%1.4ff Y=%1.4ff Z=%1.4f\r\n", acc_data.x, acc_data.y, acc_data.z);
+        output.printf("ACC: X=%1.4ff Y=%1.4ff Z=%1.4f\r\n", acc_data.x, acc_data.y, acc_data.z);
         wait(1.0f);
     }
 
