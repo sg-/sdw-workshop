@@ -142,11 +142,11 @@ public:
                                                                  M2MResourceInstance::STRING,
                                                                  true);
                 if (res) {
-                    char buffer[64] = "";
+                    char buffer[128] = "";
                     // fill the value of the acceleromter
                     sprintf(buffer,"{\"accelX\":%1.1f, \"accelY\":%1.1f, \"accelZ\":%1.1f}", 0.0f, 0.0f ,0.0f);
                     // set the value of the accelerometer data
-                    res->set_operation(M2MBase::GET_PUT_ALLOWED);
+                    res->set_operation(M2MBase::GET_ALLOWED);
                     res->set_value((const uint8_t*)buffer,
                                    (const uint32_t)strlen(buffer));
                     trace_printer("%s\n", buffer);
@@ -164,7 +164,7 @@ public:
             if (inst) {
                 M2MResource* res = inst->resource("7777");
                 if (res) {
-                    char buffer[64] = "";
+                    char buffer[128] = "";
                     motion_data_units_t data;
                     acc.getAxis(data);
                     // fill the value of the acceleromter

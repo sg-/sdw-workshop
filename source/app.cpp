@@ -87,7 +87,7 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
     // Issue register command.
     FunctionPointer2<void, M2MSecurity*, M2MObjectList> fp(&mbed_client, &MbedClient::test_register);
     minar::Scheduler::postCallback(fp.bind(register_object, object_list));
-    minar::Scheduler::postCallback(&mbed_client, &MbedClient::update_sdw_resource).period(minar::milliseconds(2000));
+    minar::Scheduler::postCallback(&mbed_client, &MbedClient::update_sdw_resource).period(minar::milliseconds(1000));
     minar::Scheduler::postCallback(&mbed_client, &MbedClient::test_update_register).period(minar::milliseconds(25000));
 }
        
