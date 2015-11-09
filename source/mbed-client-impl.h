@@ -45,7 +45,7 @@ public:
         _unregistered = false;
         _register_security = NULL;
         _value = 0;
-        _swd_object = NULL;
+        _sdw_object = NULL;
     }
 
     ~MbedClient() {
@@ -57,8 +57,11 @@ public:
         }
     }
 
-    void trace_printer(const char* str) {
-        output.printf("\r\n%s\r\n", str);
+    void trace_printer(const char* format, ...) {
+        va_list argp;
+        va_start(argp, format);
+        output.vprintf(format, argp);
+        va_end(argp);
     }
 
     void create_interface() {
@@ -66,9 +69,9 @@ public:
         // setup its name, resource type, life time, connection mode,
         // Currently only LwIPv4 is supported.
 
-	// Randomizing listening port for Certificate mode connectivity
-	srand(time(NULL));
-	uint16_t port = rand() % 65535 + 12345;
+    	// Randomizing listening port for Certificate mode connectivity
+    	srand(time(NULL));
+    	uint16_t port = rand() % 65535 + 12345;
 
         _interface = M2MInterfaceFactory::create_interface(*this,
                                                   ENDPOINT_NAME,
@@ -117,40 +120,50 @@ public:
     }
 
     M2MObject* create_sdw_object() {
-        _swd_object = M2MInterfaceFactory::create_object("777");
+        _sdw_object = M2MInterfaceFactory::create_object("777");
         
-        if(_swd_object) {
-            M2MObjectInstance* inst = _swd_object->create_object_instance();
+        if(_sdw_object) {
+            M2MObjectInstance* inst = _sdw_object->create_object_instance();
             if(inst) {
                 M2MResource* res = inst->create_dynamic_resource("7777",
                                                                  "FXOS8700Q",
                                                                  M2MResourceInstance::STRING,
                                                                  true);
-                char buffer[64] = "";
-                // fill the value of the acceleromter
-                sprintf(buffer,"{\"accelX\":%1.1f, \"accelY\":%1.1f, \"accelZ\":%1.1f}", 0.0f, 0.0f ,0.0f);
-                // set the value of the accelerometer data
-                res->set_operation(M2MBase::GET_PUT_ALLOWED);
-                res->set_value((const uint8_t*)buffer,
-                               (const uint32_t)strlen(buffer));
+                if (res) {
+                    char buffer[64] = "";
+                    // fill the value of the acceleromter
+                    sprintf(buffer,"{\"accelX\":%1.1f, \"accelY\":%1.1f, \"accelZ\":%1.1f}", 0.0f, 0.0f ,0.0f);
+                    // set the value of the accelerometer data
+                    res->set_operation(M2MBase::GET_PUT_ALLOWED);
+                    res->set_value((const uint8_t*)buffer,
+                                   (const uint32_t)strlen(buffer));
+                    trace_printer("%s\n", buffer);
+                } else {
+                    trace_printer("%s:%d - Failed to create M2MResource\n", __FILE__, __LINE__);
+                }
             }
         }
-        return _swd_object;
+        return _sdw_object;
     }
 
     void update_sdw_resource() {
-        if(_swd_object) {
-            M2MObjectInstance* inst = _swd_object->object_instance();
+        if(_sdw_object) {
+            M2MObjectInstance* inst = _sdw_object->object_instance();
             if(inst) {
                 M2MResource* res = inst->resource("7777");
-                char buffer[64] = "";
-                motion_data_units_t data;
-                acc.getAxis(data);
-                // fill the value of the acceleromter
-                sprintf(buffer,"{\"accelX\":%1.1f, \"accelY\":%1.1f, \"accelZ\":%1.1f}", data.x, data.y ,data.z);                
-                // set the value of the accelerometer data
-                res->set_value((const uint8_t*)buffer,
-                               (const uint32_t)strlen(buffer));
+                if (res) {
+                    char buffer[64] = "";
+                    motion_data_units_t data;
+                    acc.getAxis(data);
+                    // fill the value of the acceleromter
+                    sprintf(buffer,"{\"accelX\":%1.1f, \"accelY\":%1.1f, \"accelZ\":%1.1f}", data.x, data.y ,data.z);                
+                    // set the value of the accelerometer data
+                    res->set_value((const uint8_t*)buffer,
+                                   (const uint32_t)strlen(buffer));
+                    trace_printer("%s\n", buffer);
+                } else {
+                    trace_printer("%s:%d - Failed to create M2MResource\n", __FILE__, __LINE__);
+                }
             }
         }
     }
@@ -269,7 +282,7 @@ private:
 
     M2MInterface    	*_interface;
     M2MSecurity         *_register_security;
-    M2MObject           *_swd_object;
+    M2MObject           *_sdw_object;
     volatile bool       _bootstrapped;
     volatile bool       _error;
     volatile bool       _registered;
