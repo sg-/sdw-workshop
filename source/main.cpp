@@ -23,11 +23,11 @@
 #include "mbed-client/m2mobjectinstance.h"
 #include "mbed-client/m2mresource.h"
 #include "minar/minar.h"
+#include "lwipv4_init.h"
+
 #include "FXOS8700Q/FXOS8700Q.h"
 #include "security.h"
 #include "mbed-client-impl.h"
-
-#include "lwipv4_init.h"
 
 using namespace mbed::util;
 
