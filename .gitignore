@@ -32,3 +32,4 @@ yotta_modules
 yotta_targets
 build
 .DS_Store
+/security.h
