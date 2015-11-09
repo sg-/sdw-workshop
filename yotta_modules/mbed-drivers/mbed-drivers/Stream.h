@@ -18,6 +18,7 @@
 
 #include "platform.h"
 #include "FileLike.h"
+#include "stdarg.h"
 
 namespace mbed {
 
@@ -32,7 +33,9 @@ public:
     int getc();
     char *gets(char *s, int size);
     int printf(const char* format, ...);
+    int vprintf(const char* format, va_list args);
     int scanf(const char* format, ...);
+    int vscanf(const char* format, va_list args);
 
     operator std::FILE*() {return _file;}
 
