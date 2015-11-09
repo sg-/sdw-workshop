@@ -63,6 +63,13 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
     // by LWM2M Client API to communicate with mbed Device server.
     eth.init(); //Use DHCP
     eth.connect();
+    
+    char *ip = eth.getIPAddress();
+    if (ip) {
+        output.printf("IP Address is: %s\n", ip);
+    } else {
+        error("Failed to aquire IP address\n");
+    }
 
     lwipv4_socket_init();
     output.printf("IP address %s\r\n", eth.getIPAddress());
