@@ -29,17 +29,17 @@
 
 // Select connection mode: Certificate or NoSecurity
 // QuickStart
-M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::NoSecurity;
+//M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::NoSecurity;
 
 // IoTF Bridge
-//M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::Certificate;
+M2MSecurity::SecurityModeType CONN_MODE = M2MSecurity::Certificate;
 
 //Select binding mode: UDP or TCP
 M2MInterface::BindingMode SOCKET_MODE = M2MInterface::UDP;
 
 // This is address to mbed Device Connector
-//const String &MBED_SERVER_ADDRESS = "coap://api.connector.mbed.com:5684";
-const String &MBED_SERVER_ADDRESS = "coap://134.168.22.97:5683";
+const String &MBED_SERVER_ADDRESS = "coap://api.connector.mbed.com:5684";
+//const String &MBED_SERVER_ADDRESS = "coap://134.168.22.97:5683";
 
 const String &MBED_USER_NAME_DOMAIN = MBED_DOMAIN;
 const String &ENDPOINT_NAME = MBED_ENDPOINT_NAME;
