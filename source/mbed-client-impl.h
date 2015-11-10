@@ -321,12 +321,22 @@ public:
         // only the LED supports PUT so lets see if its this instance...
         M2MObjectInstance* inst = _sdw_led_object->object_instance();
         if (inst) {
+            // should be the /311/0/5850 resource... check for it...
             M2MResource* res = inst->resource("5850");
             if (res != NULL && base == res) {
+                // extract the LED value...
                 char *new_led_value = (char *)(res->value());
+                
+                // DEBUG
                 printf("\nLight Switch Resource Changed! [%s]\n",new_led_value);
-                if (strcmp(new_led_value,"1") == 0) __led = 0;
-                else __led = 1;
+                
+                // Update the LED
+                if (strcmp(new_led_value,"1") == 0) {
+                    __led = 0;
+                }
+                else {
+                    __led = 1;
+                }
             }
         }
     }
