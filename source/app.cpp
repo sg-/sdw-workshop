@@ -36,6 +36,9 @@ MbedClient mbed_client;
 I2C i2c(PTE25, PTE24);
 FXOS8700QAccelerometer acc(i2c, FXOS8700CQ_SLAVE_ADDR1);
 
+// LED light
+DigitalOut __led(LED3);
+
 void app_start(int /*argc*/, char* /*argv*/[]) {
 
     //Sets the console baud-rate
@@ -75,12 +78,16 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
 
     // Create Generic object specifying custom resources
     M2MObject* sdw_object = mbed_client.create_sdw_object();
+    
+    // Create Generic object specifying custom resources
+    M2MObject* led_object = mbed_client.create_led_object();
 
     // Add all the objects that you would like to register
     // into the list and pass the list for register API.
     M2MObjectList object_list;
     object_list.push_back(device_object);
     object_list.push_back(sdw_object);
+    object_list.push_back(led_object);
 
     mbed_client.set_register_object(register_object);
 
