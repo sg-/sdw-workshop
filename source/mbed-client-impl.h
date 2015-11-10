@@ -160,11 +160,8 @@ public:
                     strcpy(buffer,"0");
                     if (__led == 1) strcpy(buffer,"1");
                     
-                    // save off the resource value for later
-                    _sdw_led_resource_ptr = res;
-                    
-                    // set the value of the LED data
-                    res->set_operation(M2MBase::GET_PUT_ALLOWED);
+                    // set the value of the LED 
+                    res->set_operation(M2MBase::GET_PUT_ALLOWED);   // we allow GET and PUT of the LED
                     res->set_value((const uint8_t*)buffer,
                                    (const uint32_t)strlen(buffer));
                     trace_printer("%s\n", buffer);
@@ -220,24 +217,6 @@ public:
                     trace_printer("%s\n", buffer);
                 } else {
                     trace_printer("%s:%d - Failed to get M2MResource\n", __FILE__, __LINE__);
-                }
-            }
-        }
-        if (_sdw_led_object) {
-            M2MObjectInstance* inst = _sdw_led_object->object_instance();
-            if (inst) {
-                M2MResource* res = inst->resource("5850");
-                if (res) {
-                    char buffer[10] = "";
-                    memset(buffer,0,10);
-                    strcpy(buffer,"0");
-                    if (__led == 1) strcpy(buffer,"1");
-                    
-                    res->set_value((const uint8_t*)buffer,
-                                   (const uint32_t)strlen(buffer));
-                    trace_printer("%s\n", buffer);
-                } else {
-                    trace_printer("%s:%d - Failed to get LED Resource\n", __FILE__, __LINE__);
                 }
             }
         }
@@ -338,11 +317,17 @@ public:
     // the callback.
     void value_updated(M2MBase *base, M2MBase::BaseType type) {
         output.printf("\nUpdate Object name %s and Type %d\n", base->name().c_str(), type);
-        if (base == _sdw_led_resource_ptr) {
-            char *new_led_value = (char *)(_sdw_led_resource_ptr->value());
-            printf("\nLight Switch Resource Changed! [%s]\n",new_led_value);
-            if (strcmp(new_led_value,"1") == 0) __led = 0;
-            else __led = 1;
+        
+        // only the LED supports PUT so lets see if its this instance...
+        M2MObjectInstance* inst = _sdw_led_object->object_instance();
+        if (inst) {
+            M2MResource* res = inst->resource("5850");
+            if (res != NULL && base == res) {
+                char *new_led_value = (char *)(res->value());
+                printf("\nLight Switch Resource Changed! [%s]\n",new_led_value);
+                if (strcmp(new_led_value,"1") == 0) __led = 0;
+                else __led = 1;
+            }
         }
     }
 
@@ -364,7 +349,6 @@ private:
     M2MSecurity         *_register_security;
     M2MObject           *_sdw_object;
     M2MObject           *_sdw_led_object;
-    M2MResource         *_sdw_led_resource_ptr;
     volatile bool       _bootstrapped;
     volatile bool       _error;
     volatile bool       _registered;
