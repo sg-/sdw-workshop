@@ -51,7 +51,7 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
     // by LWM2M Client API to communicate with mbed Device server.
     eth.init(); //Use DHCP
     eth.connect();
-    
+    output.printf("%s\n", eth.getMACAddress());
     char *ip = eth.getIPAddress();
     if (ip) {
         output.printf("IP Address is: %s\n", ip);
