@@ -22,10 +22,21 @@
 #include "compiler-polyfill/attributes.h"
 
 __weak void mbed_mac_address(char *mac) {
-    mac[0] = 0x00;
-    mac[1] = 0x02;
-    mac[2] = 0xF7;
-    mac[3] = 0xF0;
-    mac[4] = 0x00;
-    mac[5] = 0x00;
+    // Fetch word 0
+    uint32_t word0 = *(uint32_t *)0x40048060;
+    // Fetch word 1
+    // we only want bottom 16 bits of word1 (MAC bits 32-47)
+    // and bit 9 forced to 1, bit 8 forced to 0
+    // Locally administered MAC, reduced conflicts
+    // http://en.wikipedia.org/wiki/MAC_address
+    uint32_t word1 = *(uint32_t *)0x4004805C;
+    word1 |= 0x00000200;
+    word1 &= 0x0000FEFF;
+    
+    mac[0] = (word1 & 0x000000ff); 
+    mac[1] = (word1 & 0x0000ff00) >> 8;
+    mac[2] = (word0 & 0xff000000) >> 24;
+    mac[3] = (word0 & 0x00ff0000) >> 16;
+    mac[4] = (word0 & 0x0000ff00) >> 8;
+    mac[5] = (word0 & 0x000000ff);
 }
