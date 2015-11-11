@@ -17,12 +17,14 @@
 #define __SECURITY_H__
  
 #include <inttypes.h>
- 
+
+// Use for your IoTF Connector 
 //#define MBED_DOMAIN "decd06cc-2a32-4e5e-80d0-7a7c65b90e6e"
 //#define MBED_ENDPOINT_NAME "2504666a-7627-4ec9-80b0-883d0286426f"
 
+// Use for QuickStart
 #define MBED_DOMAIN "domain"
-#define MBED_ENDPOINT_NAME "dougs-endpoint"
+#define MBED_ENDPOINT_NAME "change-me"
  
 const uint8_t SERVER_CERT[] = "-----BEGIN CERTIFICATE-----\r\n"
 "MIIBmDCCAT6gAwIBAgIEVUCA0jAKBggqhkjOPQQDAjBLMQswCQYDVQQGEwJGSTEN\r\n"
