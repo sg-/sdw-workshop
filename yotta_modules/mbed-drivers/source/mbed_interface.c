@@ -30,8 +30,11 @@ __weak void mbed_mac_address(char *mac) {
     // Locally administered MAC, reduced conflicts
     // http://en.wikipedia.org/wiki/MAC_address
     uint32_t word1 = *(uint32_t *)0x4004805C;
-    word1 |= 0x00000200;
-    word1 &= 0x0000FEFF;
+    word1 |= 0x00000002;
+    word1 &= 0x0000FFFE;
+    
+    //mac[0] |= 0x02; // force bit 1 to a "1" = "Locally Administered"
+    //mac[0] &= 0xFE; // force bit 0 to a "0" = Unicast
     
     mac[0] = (word1 & 0x000000ff); 
     mac[1] = (word1 & 0x0000ff00) >> 8;
