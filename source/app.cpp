@@ -47,6 +47,9 @@ void app_start(int /*argc*/, char* /*argv*/[]) {
     // start the accelerometer
     acc.enable();
 
+    // print device name for easy reference
+    output.printf("Device Name is '%s'\r\n\r\n",MBED_ENDPOINT_NAME);
+
     // This sets up the network interface configuration which will be used
     // by LWM2M Client API to communicate with mbed Device server.
     eth.init(); //Use DHCP
